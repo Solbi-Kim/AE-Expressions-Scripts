@@ -1,0 +1,35 @@
+// cubic-bezier 구현 (CSS와 동일)
+function cubicBezier(tNorm, p1x,p1y,p2x,p2y){
+    // 베지어 보간 함수
+    function bezier(t,p0,p1,p2,p3){
+        return ((1-t)**3)*p0 + 3*((1-t)**2)*t*p1 + 3*(1-t)*(t**2)*p2 + (t**3)*p3;
+    }
+
+    // 주어진 x좌표에 맞는 t를 근사적으로 찾기 (이분법)
+    var x = tNorm;
+    var lower=0, upper=1, t=0.5;
+    for (var i=0;i<10;i++){ // 반복해서 정밀도 높임
+        var testX = bezier(t,0,p1x,p2x,1);
+        if (testX < x){ lower = t; } else { upper = t; }
+        t = (lower+upper)/2;
+    }
+
+    // 찾은 t로 y좌표 반환
+    return bezier(t,0,p1y,p2y,1);
+}
+
+// ------------------ 예시 ------------------
+n = 2; // 돌아오는 시간(초)
+rangeX=200; rangeY=200;
+seedRandom(index,true);
+offset=[random(-rangeX,rangeX),random(-rangeY,rangeY)];
+origin=value;
+
+t = time-inPoint;
+tNorm = clamp(t/n,0,1);
+
+// CSS cubic-bezier
+progress = cubicBezier(tNorm,0,0.5,0.5,1);
+
+// offset에서 origin으로 이동
+origin + offset*(1-progress);
